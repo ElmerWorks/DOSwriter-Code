@@ -7,12 +7,12 @@ Android Studio build process notes will be added to this file.
 
 Use this Android Studio Agent prompt to train Android Studio to understand the code architecture :
 
-The code in @/yourPath/DOSwriter is for an Android text editor and was coded in Android Studio.
+The code in @/yourPath/DOSwriter is for an Android text editor coded in Android Studio.
 To modify this code, review the Markdown documents in the following folders to understand the architecture and main features :
-@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/architecture-docs
-@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/new-features
-@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/public
-@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/INSTRUCTIONS.md
+<br>@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/architecture-docs
+<br>@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/new-features
+<br>@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/public
+<br>@/yourPath/DOSwriter/DOSwriter/app/src/main/assets/INSTRUCTIONS.md
 
 ## License
 
