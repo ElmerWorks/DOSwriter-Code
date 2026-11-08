@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
 
 plugins {
@@ -47,24 +48,18 @@ android {
 // Custom task to copy and label APKs in standard output locations
 tasks.register("renameAllApks") {
     doLast {
-        val date = SimpleDateFormat("MMddyyyy").format(Date())
-        val searchDirs = listOf(
-            file("${layout.buildDirectory.get().asFile}/outputs/apk/release"),
-            file("${layout.buildDirectory.get().asFile}/outputs/apk/debug"),
-            file("${projectDir}/release"),
-            file("${projectDir}/debug")
-        )
-        
-        searchDirs.forEach { dir ->
-            if (dir.exists()) {
-                dir.listFiles()?.forEach { file ->
-                    if (file.extension == "apk" && !file.name.startsWith("DWTEv1.0")) {
-                        val variant = if (file.name.contains("debug")) "debug" else "release"
-                        val newName = "DWTEv1.0-$date-app-$variant.apk"
-                        val destFile = File(dir, newName)
-                        file.copyTo(destFile, overwrite = true)
-                        println("Copied ${file.name} to $newName")
-                    }
+        val dateStr = SimpleDateFormat("MMMddyy", Locale.US).format(Date()).uppercase(Locale.US)
+        val releaseDir = File(projectDir, "release")
+        if (!releaseDir.exists()) releaseDir.mkdirs()
+
+        val apkOutputDir = file("${layout.buildDirectory.get().asFile}/outputs/apk/release")
+        if (apkOutputDir.exists()) {
+            apkOutputDir.listFiles()?.forEach { file ->
+                if (file.extension == "apk") {
+                    val newName = "DWTEv0.9-$dateStr.apk"
+                    val destFile = File(releaseDir, newName)
+                    file.copyTo(destFile, overwrite = true)
+                    println("Copied release APK to ${destFile.absolutePath}")
                 }
             }
         }

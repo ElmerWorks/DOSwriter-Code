@@ -32,11 +32,11 @@ class AboutOverlay @JvmOverloads constructor(
     }
 
     private fun getLines(): List<String> {
-        val buildDate = SimpleDateFormat("MMMM-dd-yyyy", Locale.US).format(Date()).uppercase()
+        val buildDate = SimpleDateFormat("MMMM-dd-yyyy", Locale.US).format(Date()).uppercase(Locale.US)
         return listOf(
             "DOSwriter Android text editing app",
             "",
-            "Build version : DOSwriterv0.1-$buildDate",
+            "Build version : DOSwriter.v0.9-$buildDate",
             "",
             "This program is distributed in the hope that it will be useful,",
             "but WITHOUT ANY WARRANTY; without even the implied warranty",
