@@ -48,6 +48,13 @@ class SelectionOverlay @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
 
+    private val bannerBgPaint = Paint().apply { style = Paint.Style.FILL }
+    private val bannerTextPaint = Paint().apply {
+        textSize = 28f
+        isAntiAlias = true
+        textAlign = Paint.Align.CENTER
+    }
+
     private val previewBgPaint = Paint()
     private val previewMarginPaint = Paint()
     private val previewTextPaint = Paint().apply {
@@ -119,8 +126,8 @@ class SelectionOverlay @JvmOverloads constructor(
 
     private fun calculateMaxVisible(): Int {
         if (fontPreviews != null) return 2 // Title + Selected
-        val availableHeight = height * 0.7f
-        return (availableHeight / itemHeight).toInt()
+        val availableHeight = (height * 0.85f - 75f) - (height * 0.22f)
+        return (availableHeight / itemHeight).toInt().coerceAtLeast(1)
     }
 
     fun selectIndex(index: Int) {
@@ -174,9 +181,12 @@ class SelectionOverlay @JvmOverloads constructor(
 
             val w = width.toFloat()
             val h = height.toFloat()
-            if (event.x < w * 0.1f || event.x > w * 0.9f || event.y < h * 0.15f || event.y > h * 0.85f) {
-                hide()
-                onCancelled?.invoke()
+            val bannerTop = h * 0.85f - 65f
+            if (event.x < w * 0.1f || event.x > w * 0.9f || event.y < h * 0.15f || event.y > h * 0.85f || event.y > bannerTop) {
+                if (event.y <= bannerTop) {
+                    hide()
+                    onCancelled?.invoke()
+                }
                 return true
             }
 
@@ -434,7 +444,20 @@ class SelectionOverlay @JvmOverloads constructor(
             }
         }
 
-        // Help text at bottom
+        // High contrast footer banner for menu keyboard options
+        val bannerTop = h * 0.85f - 65f
+        val bannerBottom = h * 0.85f
+        
+        bannerBgPaint.color = if (isEinkMode) Color.WHITE else Color.BLACK
+        canvas.drawRect(w * 0.1f, bannerTop, w * 0.9f, bannerBottom, bannerBgPaint)
+        
+        val bannerBorderPaint = Paint().apply {
+            color = if (isEinkMode) Color.BLACK else Color.GRAY
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
+        }
+        canvas.drawRect(w * 0.1f, bannerTop, w * 0.9f, bannerBottom, bannerBorderPaint)
+
         val title = getTitle().uppercase()
         val help = when {
             title == "BOOKMARKS" -> "[Enter] Go to | [D/Del] Delete | [Esc] Cancel"
@@ -442,10 +465,7 @@ class SelectionOverlay @JvmOverloads constructor(
             else -> "[Enter] Select | [Esc] Cancel"
         }
         
-        textPaint.color = if (isEinkMode) Color.GRAY else Color.DKGRAY
-        val oldSize = textPaint.textSize
-        textPaint.textSize = oldSize * 0.7f
-        canvas.drawText(help, x, h * 0.83f, textPaint)
-        textPaint.textSize = oldSize
+        bannerTextPaint.color = if (isEinkMode) Color.BLACK else Color.WHITE
+        canvas.drawText(help, w * 0.5f, bannerTop + 42f, bannerTextPaint)
     }
 }
