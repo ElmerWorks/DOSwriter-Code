@@ -20,6 +20,8 @@ android {
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val buildDateStr = SimpleDateFormat("MMMddyy", Locale.US).format(Date()).uppercase(Locale.US)
+        buildConfigField("String", "APK_BUILD_DATE", "\"$buildDateStr\"")
     }
 
     buildTypes {
@@ -42,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
