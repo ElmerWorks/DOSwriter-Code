@@ -1066,7 +1066,7 @@ internal fun MainActivity.handleOverlayCommand(cmd: Command) {
         Command.UnwrapParagraphs -> performUnwrapParagraphs()
         Command.OpenManuscriptMenu -> {
             val currentBuf = bufferManager.getCurrentBuffer()
-            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri
+            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri ?: workingFolderManager.getFolders().firstOrNull()?.path
             val hasContent = if (currentBuf.id == 17) {
                 ManuscriptEngine(this).getScratchLogEntries(currentBuf, workingFolderUri).isNotEmpty()
             } else {
@@ -1086,7 +1086,7 @@ internal fun MainActivity.handleOverlayCommand(cmd: Command) {
         }
         Command.OpenManuscriptFilmstrip -> {
             val currentBuf = bufferManager.getCurrentBuffer()
-            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri
+            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri ?: workingFolderManager.getFolders().firstOrNull()?.path
             val hasContent = if (currentBuf.id == 17) {
                 ManuscriptEngine(this).getScratchLogEntries(currentBuf, workingFolderUri).isNotEmpty()
             } else {
@@ -1100,7 +1100,7 @@ internal fun MainActivity.handleOverlayCommand(cmd: Command) {
         }
         Command.OpenManuscriptLayout -> {
             val currentBuf = bufferManager.getCurrentBuffer()
-            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri
+            val workingFolderUri = workingFolderManager.currentFolder?.path ?: workingFolderManager.lastUsedFolderUri ?: workingFolderManager.getFolders().firstOrNull()?.path
             val hasContent = if (currentBuf.id == 17) {
                 ManuscriptEngine(this).getScratchLogEntries(currentBuf, workingFolderUri).isNotEmpty()
             } else {
@@ -1276,17 +1276,17 @@ internal fun MainActivity.handleOverlayCommand(cmd: Command) {
             }
         }
         Command.FlushScratchpadSave -> {
-            val workingFolder = workingFolderManager.currentFolder
-            if (workingFolder == null && workingFolderManager.getFolders().isEmpty()) {
+            val workingFolder = workingFolderManager.currentFolder ?: workingFolderManager.getFolders().firstOrNull()
+            if (workingFolder == null) {
                 selectionOverlay.show("No Working Folder set for Scratchpad Log", listOf("Link Working Folder Now", "Cancel"), 0, { sel ->
                     if (sel == 0) {
                         linkWorkingFolderLauncher.launch(null)
                     }
                 }, {})
             } else {
-                val folderUri = workingFolder?.path
+                val folderUri = workingFolder.path
                 if (bufferManager.flushScratchpad(true, folderUri)) {
-                    val folderName = workingFolder?.name ?: "Working Folder"
+                    val folderName = workingFolder.name ?: "Working Folder"
                     showStatusToast("Scratchpad saved to $folderName/${bufferManager.scratchLogFilename}")
                     editorView.invalidate()
                     editorView.scrollToCursor()
