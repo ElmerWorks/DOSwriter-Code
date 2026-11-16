@@ -431,9 +431,22 @@ class BufferManager(private val context: Context, private val bufferCount: Int =
                             file = root.createFile("text/plain", scratchLogFilename)
                         }
                         if (file != null) {
-                            val os = context.contentResolver.openOutputStream(file.uri, "wa")
+                            var existingContent = ""
+                            try {
+                                context.contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                                    existingContent = inputStream.bufferedReader().use { it.readText() }
+                                }
+                            } catch (e: Exception) {}
+
+                            val updatedContent = if (existingContent.isNotEmpty()) {
+                                if (!existingContent.endsWith("\n")) "$existingContent\n$logAppend" else "$existingContent$logAppend"
+                            } else {
+                                logAppend
+                            }
+
+                            val os = context.contentResolver.openOutputStream(file.uri, "w")
                             if (os != null) {
-                                os.use { it.write(logAppend.toByteArray()) }
+                                os.use { it.write(updatedContent.toByteArray(Charsets.UTF_8)) }
                             } else {
                                 return false
                             }
